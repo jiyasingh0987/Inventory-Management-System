@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 
@@ -7,22 +6,41 @@ const {
     getAllProducts,
     getProductById,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getLowStockProducts,
+    getProductSummary,
+    adjustProductStock
 } = require("../controllers/productController");
 
-// CREATE
-router.post("/", createProduct);
+const {
+    validateProduct,
+    validateProductUpdate
+} = require("../middleware/validateProduct");
 
-// READ ALL
+const validateObjectId = require("../middleware/validateObjectId");
+
+// CREATE PRODUCT
+router.post("/", validateProduct, createProduct);
+
+// GET ALL PRODUCTS
 router.get("/", getAllProducts);
 
-// READ ONE
-router.get("/:id", getProductById);
+// LOW STOCK REPORT
+router.get("/low-stock", getLowStockProducts);
 
-// UPDATE
-router.put("/:id", updateProduct);
+// CATEGORY SUMMARY
+router.get("/summary", getProductSummary);
 
-// DELETE
-router.delete("/:id", deleteProduct);
+// STOCK ADJUSTMENT
+router.patch("/:id/stock", validateObjectId, adjustProductStock);
+
+// GET PRODUCT BY ID
+router.get("/:id", validateObjectId, getProductById);
+
+// UPDATE PRODUCT
+router.put("/:id", validateObjectId, validateProductUpdate, updateProduct);
+
+// DELETE PRODUCT
+router.delete("/:id", validateObjectId, deleteProduct);
 
 module.exports = router;
